@@ -20,16 +20,32 @@ export class User {
     return this._name;
   }
 
+  public set setName(newName: string) {
+    this._name = newName;
+  }
+
   public get cpf() {
     return this._cpf;
+  }
+
+  public set setCpf(newCpf: string) {
+    this._cpf = newCpf;
   }
 
   public get email() {
     return this._email;
   }
 
+  public set setEmail(newEmail: string) {
+    this._email = newEmail;
+  }
+
   public get age() {
     return this._age;
+  }
+
+  public set setAge(newAge: number) {
+    this._age = newAge;
   }
 
   public get transactions() {
@@ -38,21 +54,21 @@ export class User {
 
   public toJson() {
     return {
-        id: this._id,
-        name: this._name,
-        cpf: this._cpf,
-        email: this._email,
-        age: this._age,
-        transactions: this._transactions
-    }
+      id: this._id,
+      name: this._name,
+      cpf: this._cpf,
+      email: this._email,
+      age: this._age,
+      transactions: this._transactions,
+    };
   }
   public toJsonOutTransactions() {
     return {
-        id: this._id,
-        name: this._name,
-        cpf: this._cpf,
-        email: this._email,
-        age: this._age,
-    }
+      id: this._id,
+      name: this._name,
+      cpf: this._cpf,
+      email: this._email,
+      age: this._age,
+    };
   }
 }

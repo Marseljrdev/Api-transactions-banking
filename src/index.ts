@@ -87,7 +87,7 @@ app.get("/users/:id", (req: Request, res: Response) => {
 });
 
 //POST/users
-// POST http://localhost:3333
+// POST http://localhost:3333/users
 app.post("/users", checkingDuplicateCpf, (req: Request, res: Response) => {
   try {
     const { name, cpf, email, age } = req.body;
@@ -126,6 +126,68 @@ app.post("/users", checkingDuplicateCpf, (req: Request, res: Response) => {
     return res.status(201).send({
       success: true,
       message: "User was created",
+    });
+  } catch (error: any) {
+    return res.status(500).send({
+      success: false,
+      message: error.toString(),
+    });
+  }
+});
+
+//PUT /users/:id:
+// PUT http://localhost:3333/users/:id
+app.put("/users/:id", (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { name, cpf, email, age } = req.body;
+
+    let user = users.find((item) => item.id === id);
+
+    if (!user) {
+      return res.status(404).send({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    user.setName = name || user.name;
+    user.setCpf = cpf || user.cpf;
+    user.setEmail = email || user.email;
+    user.setAge = age || user.age;
+
+    return res.status(201).send({
+      success: true,
+      message: "User updated successfully",
+    });
+  } catch (error: any) {
+    return res.status(500).send({
+      success: false,
+      message: error.toString(),
+    });
+  }
+});
+
+//DELETE /users/:id
+// DELETE http://localhost:3333/users/:id
+app.delete("/users/:id", (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    let index = users.findIndex((item) => item.id === id);
+
+    if (index === -1) {
+      return res.status(404).send({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    users.splice(index, 1);
+
+    return res.status(200).send({
+      success: true,
+      message: "User deleted successfully",
     });
   } catch (error: any) {
     return res.status(500).send({
