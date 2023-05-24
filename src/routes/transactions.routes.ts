@@ -2,16 +2,16 @@ import { NextFunction, Router, Request, Response } from "express";
 import { TransactionsController } from "../controller/transactions.controller";
 import { users } from "../database/users";
 
-//Middleware que verifica se o cpf ja existe
-function checkingDuplicateCpf(req: Request, res: Response, next: NextFunction) {
-  const { cpf } = req.body;
+//Middleware que verifica se o usuario existe
+function userAlreadyExists(req: Request, res: Response, next: NextFunction) {
+  const { id } = req.params;
 
-  let result = users.find((item) => item.cpf === cpf);
+  let userId = users.find((item) => item.id === id);
 
-  if (result) {
-    return res.status(400).send({
+  if (!userId) {
+    return res.status(404).send({
       success: false,
-      message: "Cpf already exists",
+      message: "User was not exists",
     });
   }
 
@@ -22,14 +22,23 @@ export const TransactionsRoutes = () => {
     mergeParams: true,
   });
 
-  app.get("/users/:id/transactions", new TransactionsController().list);
+  app.get(
+    "/users/:id/transactions",
+    userAlreadyExists,
+    new TransactionsController().list
+  );
 
   app.get(
     "/users/:id/transactions/:transactionId",
+    userAlreadyExists,
     new TransactionsController().transaction
   );
 
-  app.post("/users/:id/transactions", new TransactionsController().create);
+  app.post(
+    "/users/:id/transactions",
+    userAlreadyExists,
+    new TransactionsController().create
+  );
 
   return app;
 };

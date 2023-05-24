@@ -103,6 +103,7 @@ export class UsersController {
       return res.status(201).send({
         success: true,
         message: "User was created",
+        data: newUser,
       });
     } catch (error: any) {
       return res.status(500).send({
