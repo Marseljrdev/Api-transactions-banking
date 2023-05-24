@@ -1,11 +1,11 @@
 import { v4 as uuidv4 } from "uuid";
 
-export class User {
+export class Transactions {
   private _id: string;
   constructor(
     private _title: string,
     private _value: number,
-    private _type: string,
+    private _type: string
   ) {
     this._id = uuidv4();
   }
@@ -26,12 +26,11 @@ export class User {
     return this._type;
   }
 
-
   public toJson() {
     return {
-        title: this._title,
-        value: this._value,
-        type: this._type,
-    }
+      title: this._title,
+      value: this._value,
+      type: this._type,
+    };
   }
 }
