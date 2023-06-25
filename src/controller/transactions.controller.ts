@@ -2,13 +2,15 @@ import { Request, Response } from "express";
 import { users } from "../database/users";
 import { Transactions } from "../models/transactions";
 import { transactions } from "../database/transactionsBanking";
+import { UserRepository } from "../repositories/user.repository";
+import { TransactionRepository } from "../repositories/transaction.repository";
 
 export class TransactionsController {
   public list(req: Request, res: Response) {
     try {
       const { id } = req.params;
 
-      let result = users.find((item) => item.id === id);
+      let result = new UserRepository().get(id);
 
       if (!result) {
         return res.status(404).send({
@@ -45,7 +47,7 @@ export class TransactionsController {
       }
 
       const newTransactions = new Transactions(title, value, type);
-      user.transactions?.push(newTransactions);
+      new TransactionRepository().create(newTransactions)
 
       return res.status(200).send({
         success: true,

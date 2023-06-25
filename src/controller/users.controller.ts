@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import { users } from "../database/users";
 import { User } from "../models/user";
+import { NextFunction } from "express-serve-static-core";
+import { UserRepository } from "../repositories/user.repository";
 
 export class UsersController {
   public list(req: Request, res: Response) {
@@ -167,6 +169,47 @@ export class UsersController {
       return res.status(500).send({
         success: false,
         message: error.toString(),
+      });
+    }
+  }
+
+  public login(req: Request, res: Response) {
+    try {
+      const { email, password } = req.body;
+
+      if (!email) {
+        return res.status(404).send({
+          success: false,
+          message: "E-mail was not providded",
+        });
+      }
+
+      if (!password) {
+        return res.status(404).send({
+          success: false,
+          message: "Password was not providded",
+        });
+      }
+
+      const user = new UserRepository().getByEmail(email);
+
+      if (!user) {
+        return res.status(404).send({
+          success: false,
+          message: "User was not found",
+        });
+      }
+
+      if (user.password !== password) {
+        return res.status(401).send({
+          success: false,
+          message: "Acesso nao autorizado",
+        });
+      }
+    } catch (error: any) {
+      return res.status(500).send({
+        success: false,
+        message: "Error interno no servidor, tente novamente mais tarde",
       });
     }
   }

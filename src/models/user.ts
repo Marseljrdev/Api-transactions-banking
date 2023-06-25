@@ -8,6 +8,7 @@ export class User {
     private _cpf: string,
     private _email: string,
     private _age: number,
+    private _password: string,
     private _transactions?: Transactions[]
   ) {
     this._id = uuidv4();
@@ -47,6 +48,10 @@ export class User {
 
   public set setAge(newAge: number) {
     this._age = newAge;
+  }
+
+  public get password() {
+    return this._password;
   }
 
   public get transactions() {
