@@ -69,7 +69,7 @@ export class UsersController {
 
   public create(req: Request, res: Response) {
     try {
-      const { name, cpf, email, age } = req.body;
+      const { name, cpf, email, age, password } = req.body;
 
       if (!name) {
         return res.status(400).send({
@@ -99,7 +99,14 @@ export class UsersController {
         });
       }
 
-      const newUser = new User(name, cpf, email, age);
+      if (!password) {
+        return res.status(400).send({
+          success: false,
+          message: "password was not provided",
+        });
+      }
+
+      const newUser = new User(name, cpf, email, age, password);
       users.push(newUser);
 
       return res.status(201).send({
