@@ -1,6 +1,8 @@
-import { Transactions } from "../models/transactions";
+import { Transactions, TransactionsType } from "../models/transactions";
+import { users } from "./users";
 
-export const transactions = [
-  new Transactions("Salario", 1800, "Deposito"),
-  new Transactions("Salario", 1550, "Deposito"),
+
+export const transactions: any = [
+  new Transactions("Salario", 1800, TransactionsType.Income),
+  new Transactions("Salario", 1550, TransactionsType.Outcome),
 ];

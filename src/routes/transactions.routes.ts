@@ -9,7 +9,9 @@ export const TransactionsRoutes = () => {
     mergeParams: true,
   });
 
-  app.get("/users/:id/transactions", new TransactionsController().list);
+  const controller = new TransactionsController();
+
+  app.get("/users/:id/transactions", (req: Request, res: Response) => controller.list(req, res));
 
   app.get(
     "/users/:id/transactions/:transactionId",

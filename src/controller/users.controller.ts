@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { users } from "../database/users";
 import { User } from "../models/user";
-import { NextFunction } from "express-serve-static-core";
 import { UserRepository } from "../repositories/user.repository";
 
 export class UsersController {

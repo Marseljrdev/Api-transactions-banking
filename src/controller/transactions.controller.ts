@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { users } from "../database/users";
-import { Transactions } from "../models/transactions";
+import { Transactions, TransactionsType } from "../models/transactions";
 import { transactions } from "../database/transactionsBanking";
 import { UserRepository } from "../repositories/user.repository";
 import { TransactionRepository } from "../repositories/transaction.repository";
@@ -9,6 +9,7 @@ export class TransactionsController {
   public list(req: Request, res: Response) {
     try {
       const { id } = req.params;
+      const { type } = req.query;
 
       let result = new UserRepository().get(id);
 
@@ -19,10 +20,24 @@ export class TransactionsController {
         });
       }
 
+      let income = this.sumTransactionsValues(
+        transactions,
+        TransactionsType.Income
+      );
+      let outcome = this.sumTransactionsValues(
+        transactions,
+        TransactionsType.Outcome
+      );
+
       return res.status(200).send({
         success: true,
         message: "Transactions was successfully listed",
         data: result.transactions?.map((item) => item.toJson()),
+        balance: {
+          income,
+          outcome,
+          total: income - outcome,
+        },
       });
     } catch (error: any) {
       return res.status(500).send({
@@ -37,9 +52,9 @@ export class TransactionsController {
       const { title, value, type } = req.body;
 
       const { id } = req.params;
-      const user = users.find((item) => item.id === id);
+      const userFind = users.find((item) => item.id === id);
 
-      if (!user) {
+      if (!userFind) {
         return res.status(404).send({
           success: false,
           message: "User not found ",
@@ -47,7 +62,7 @@ export class TransactionsController {
       }
 
       const newTransactions = new Transactions(title, value, type);
-      new TransactionRepository().create(newTransactions)
+      new TransactionRepository().create(newTransactions);
 
       return res.status(200).send({
         success: true,
@@ -75,7 +90,7 @@ export class TransactionsController {
       }
 
       const transactionFind = transactions.find(
-        (item) => item.id === transactionId
+        (item: any) => item.id === transactionId
       );
 
       if (!transactionFind) {
@@ -96,5 +111,14 @@ export class TransactionsController {
         message: error.toString(),
       });
     }
+  }
+
+  private sumTransactionsValues(
+    transactions: Transactions[],
+    type: TransactionsType
+  ): number {
+    return transactions
+      .filter((t) => t.type === type)
+      .reduce((soma, transaction) => soma + transaction.value, 0);
   }
 }
