@@ -54,6 +54,7 @@ export class Transactions {
 
   public toJson() {
     return {
+      id: this._id,
       title: this._title,
       value: this._value,
       type: this._type,
