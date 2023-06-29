@@ -198,6 +198,7 @@ export class UsersController {
       }
 
       const user = new UserRepository().getByEmail(email);
+      console.log('log user', user?.email);
 
       if (!user) {
         return res.status(404).send({
@@ -212,6 +213,13 @@ export class UsersController {
           message: "Acesso nao autorizado",
         });
       }
+
+      return res.status(200).send({
+        success: true,
+        message: "User is logged",
+        email: user.email,
+        password: user.password
+      })
     } catch (error: any) {
       return res.status(500).send({
         success: false,
