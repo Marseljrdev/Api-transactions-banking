@@ -217,8 +217,11 @@ export class UsersController {
       return res.status(200).send({
         success: true,
         message: "User is logged",
-        email: user.email,
-        password: user.password
+        data: {
+          email: user.email,
+          password: user.password
+        }
+
       })
     } catch (error: any) {
       return res.status(500).send({
