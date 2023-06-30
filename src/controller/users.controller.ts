@@ -215,10 +215,12 @@ export class UsersController {
       }
 
       return res.status(200).send({
+        name: user.name,
         success: true,
         message: "User is logged",
         data: {
           id: user.id,
+          name: user.name,
           email: user.email,
           password: user.password
         }
