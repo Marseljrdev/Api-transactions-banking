@@ -218,6 +218,7 @@ export class UsersController {
         success: true,
         message: "User is logged",
         data: {
+          id: user.id,
           email: user.email,
           password: user.password
         }
