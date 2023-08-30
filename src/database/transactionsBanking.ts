@@ -1,4 +1,4 @@
-import { Transactions, TransactionsType } from "../models/transactions";
+import { Transactions, TransactionsType } from "../app/models/transactions.model";
 import { users } from "./users";
 
 

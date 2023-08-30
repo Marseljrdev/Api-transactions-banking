@@ -1,7 +1,7 @@
 import { TransactionsEntity } from "../database/entities/transactions.entity";
 import { Database } from "../main/database/database.connection";
-import { Transactions, TransactionsType } from "../models/transactions";
-import { User } from "../models/user";
+import { Transactions, TransactionsType } from "../app/models/transactions.model";
+import { User } from "../app/models/user.model";
 import { UserRepository } from "./user.repository";
 
 interface ListTransactionsParams {

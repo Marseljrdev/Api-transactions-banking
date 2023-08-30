@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { Transactions, TransactionsType } from "../models/transactions";
+import { Transactions, TransactionsType } from "../app/models/transactions.model";
 import { UserRepository } from "../repositories/user.repository";
 import { TransactionRepository } from "../repositories/transaction.repository";
 import { HttpResponse } from "../util/htttp-response.adapter";

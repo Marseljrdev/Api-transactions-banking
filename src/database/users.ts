@@ -1,4 +1,4 @@
-import { User } from "../models/user";
+import { User } from "../app/models/user.model";
 import {transactions} from './transactionsBanking';
 
 export const users = [

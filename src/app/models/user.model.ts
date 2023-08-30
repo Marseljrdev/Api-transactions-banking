@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
-import { Transactions } from "./transactions";
-import { UserEntity } from "../database/entities/user.entity";
+import { Transactions } from "./transactions.model";
+import { UserEntity } from "../../database/entities/user.entity";
 
 export class User {
   private _id: string;

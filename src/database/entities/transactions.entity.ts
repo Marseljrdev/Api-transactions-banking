@@ -1,5 +1,5 @@
 import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn } from "typeorm";
-import { TransactionsType } from "../../models/transactions";
+import { TransactionsType } from "../../app/models/transactions.model";
 import { UserEntity } from "./user.entity";
 
 @Entity("transactions")
