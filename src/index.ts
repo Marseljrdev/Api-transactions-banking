@@ -1,23 +1,34 @@
-import express from "express";
-import { UsersRoutes } from "./routes/users.routes";
-import { TransactionsRoutes } from "./routes/transactions.routes";
-import cors from "cors";
-import * as dotenv from "dotenv";
 
-dotenv.config();
+import { Server } from "./main/config/express.config";
+import { Database } from "./main/database/database.connection";
+import "reflect-metadata";
 
-const app = express();
-app.use(express.json());
-app.use(cors());
 
-//USERS
 
-app.use("/", UsersRoutes());
 
-//TRANSACTIONS
 
-app.use("/", TransactionsRoutes());
+Database.connect().then(() => {
+  console.log("Database is connected!");
 
-app.listen(process.env.PORT, () => {
-  console.log("Api is running port " + process.env.PORT);
+  const app = Server.create();
+  Server.listen(app);
+
 });
+
+//conexao sem ter criado uma classe
+// pool
+//   .connect()
+//   .then((conection) => {
+//     // console.log(conection);
+//     listUsers(conection);
+//     console.log("conexao com o bd realizada com sucesso!");
+//   })
+//   .catch((error) => {
+//     console.log(error);
+//   });
+
+//inserindo query
+// async function listUsers(connection: PoolClient) {
+//   const result = await connection.query("select * from transactions.users");
+//   console.log(result);
+// }

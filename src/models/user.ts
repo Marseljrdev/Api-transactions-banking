@@ -1,11 +1,12 @@
 import { v4 as uuidv4 } from "uuid";
 import { Transactions } from "./transactions";
+import { UserEntity } from "../database/entities/user.entity";
 
 export class User {
   private _id: string;
   constructor(
     private _name: string,
-    private _cpf: string,
+    private _cpf: number,
     private _email: string,
     private _age: number,
     private _password: string,
@@ -30,7 +31,7 @@ export class User {
     return this._cpf;
   }
 
-  public set setCpf(newCpf: string) {
+  public set setCpf(newCpf: number) {
     this._cpf = newCpf;
   }
 
@@ -76,5 +77,12 @@ export class User {
       email: this._email,
       age: this._age,
     };
+  }
+
+  public static create(row: UserEntity) {
+    const user = new User(row.name, row.cpf, row.email, row.age, row.password);
+    user._id = row.id;
+    // user._transactions = row.transactions
+    return user;
   }
 }

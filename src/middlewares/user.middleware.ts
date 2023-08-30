@@ -1,8 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import { users } from "../database/users";
+import { UserRepository } from "../repositories/user.repository";
 
 export class UserMiddleWare {
-  public static validateUserExists(
+  public static async validateUserExists(
     req: Request,
     res: Response,
     next: NextFunction
@@ -10,7 +11,7 @@ export class UserMiddleWare {
     try {
       const { id } = req.params;
 
-      const user = users.find((item) => item.id === id);
+      const user = await new UserRepository().get(id);
 
       if (!user) {
         return res.status(404).send({

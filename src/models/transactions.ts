@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import { User } from "./user";
+import { TransactionsEntity } from "../database/entities/transactions.entity";
 
 export enum TransactionsType {
   Income = "I",
@@ -12,6 +13,7 @@ export class Transactions {
     private _title: string,
     private _value: number,
     private _type: TransactionsType,
+    private _user: User
   ) {
     this._id = uuidv4();
   }
@@ -44,9 +46,9 @@ export class Transactions {
     this._type = newType;
   }
 
-  // public get user() {
-  //   return this._user;
-  // }
+  public get user() {
+    return this._user;
+  }
 
   // public set setUser(newUser: User) {
   //   this._user = newUser;
@@ -58,6 +60,19 @@ export class Transactions {
       title: this._title,
       value: this._value,
       type: this._type,
+      user: this._user?.toJson(),
     };
+  }
+
+  public static create(row: TransactionsEntity, user: User) {
+    const transaction = new Transactions(
+      row.title,
+      Number(row.value),
+      row.type as TransactionsType,
+      user
+    );
+    transaction._id = row.id;
+
+    return transaction;
   }
 }

@@ -11,17 +11,17 @@ export const UsersRoutes = () => {
 
   app.get("/users/:id", new UsersController().obter);
 
-  app.post(
-    "/users",
-    [UserMiddleWare.checkingDuplicateCpf],
-    new UsersController().create
-  );
+  // app.post(
+  //   "/users",
+  //   [UserMiddleWare.checkingDuplicateCpf],
+  //   new UsersController().create
+  // );
 
-  app.put("/users/:id", new UsersController().update);
+  // app.put("/users/:id", new UsersController().update);
 
-  app.delete("/users/:id", new UsersController().delete);
+  // app.delete("/users/:id", new UsersController().delete);
 
-  app.post("/users/login", new UsersController().login);
+  // app.post("/users/login", new UsersController().login);
 
   return app;
 };
