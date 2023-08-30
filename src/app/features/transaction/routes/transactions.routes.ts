@@ -1,8 +1,8 @@
 import { NextFunction, Router, Request, Response } from "express";
-import { TransactionsController } from "../controller/transactions.controller";
+import { TransactionsController } from "../controllers/transactions.controller";
 // import { users } from "../data/users";
-import { UserMiddleWare } from "../middlewares/user.middleware";
-import { TransactionsMiddleware } from "../middlewares/transactions.middleware";
+import { UserMiddleWare } from "../../user/validators/user.middleware";
+import { TransactionsMiddleware } from "../validators/transactions.middleware";
 
 export const TransactionsRoutes = () => {
   const app = Router({

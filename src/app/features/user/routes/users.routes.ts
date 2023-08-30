@@ -1,6 +1,6 @@
 import { NextFunction, Router, Request, Response } from "express";
-import { UsersController } from "../controller/users.controller";
-import { UserMiddleWare } from "../middlewares/user.middleware";
+import { UsersController } from "../controllers/users.controller";
+import { UserMiddleWare } from "../validators/user.middleware";
 
 export const UsersRoutes = () => {
   const app = Router({

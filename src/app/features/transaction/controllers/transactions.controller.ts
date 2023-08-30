@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { Transactions, TransactionsType } from "../app/models/transactions.model";
-import { UserRepository } from "../repositories/user.repository";
+import { Transactions, TransactionsType } from "../../../models/transactions.model";
+import { UserRepository } from "../../user/repositories/user.repository";
 import { TransactionRepository } from "../repositories/transaction.repository";
-import { HttpResponse } from "../util/htttp-response.adapter";
+import { HttpResponse } from "../../../shared/util/htttp-response.adapter";
 
 export class TransactionsController {
   // public async list(req: Request, res: Response) {

@@ -1,8 +1,8 @@
-import { TransactionsEntity } from "../database/entities/transactions.entity";
-import { Database } from "../main/database/database.connection";
-import { Transactions, TransactionsType } from "../app/models/transactions.model";
-import { User } from "../app/models/user.model";
-import { UserRepository } from "./user.repository";
+import { TransactionsEntity } from "../../../shared/database/entities/transactions.entity";
+import { Database } from "../../../../main/database/database.connection";
+import { Transactions, TransactionsType } from "../../../models/transactions.model";
+import { User } from "../../../models/user.model";
+import { UserRepository } from "../../user/repositories/user.repository";
 
 interface ListTransactionsParams {
   userId: string;

@@ -1,7 +1,7 @@
 import express, { Express } from "express";
 import cors from "cors";
-import { TransactionsRoutes } from "../../routes/transactions.routes";
-import { UsersRoutes } from "../../routes/users.routes";
+import { TransactionsRoutes } from "../../app/features/transaction/routes/transactions.routes";
+import { UsersRoutes } from "../../app/features/user/routes/users.routes";
 import * as dotenv from "dotenv";
 dotenv.config();
 
