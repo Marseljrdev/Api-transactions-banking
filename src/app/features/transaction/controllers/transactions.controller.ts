@@ -78,42 +78,31 @@ export class TransactionsController {
     }
   }
 
-  // public transaction(req: Request, res: Response) {
-  //   try {
-  //     const { id, transactionId } = req.params;
+  public async transaction(req: Request, res: Response) {
+    try {
+      const { id, transactionId } = req.params;
 
-  //     const user = users.find((item) => item.id === id);
+      const repositoryUser = new UserRepository();
+      
+      const user = await repositoryUser.get(id)
 
-  //     if (!user) {
-  //       return res.status(404).send({
-  //         success: false,
-  //         message: "User was not found",
-  //       });
-  //     }
+      if (!user) {
+        return HttpResponse.notFound(res, "User");
+      }
 
-  //     const transactionFind = transactions.find(
-  //       (item: any) => item.id === transactionId
-  //     );
+      const repositoryTransaction = new TransactionRepository();
+      const transactionFind = await repositoryTransaction.get(transactionId);
 
-  //     if (!transactionFind) {
-  //       return res.status(404).send({
-  //         success: false,
-  //         message: "Transaction was not found",
-  //       });
-  //     }
+      if (!transactionFind) {
+        return HttpResponse.notFound(res, "Transaction");
+      }
 
-  //     return res.status(200).send({
-  //       success: true,
-  //       message: "Transactions was successfully",
-  //       data: user.transactions?.map((item) => item.toJson()),
-  //     });
-  //   } catch (error: any) {
-  //     return res.status(500).send({
-  //       success: false,
-  //       message: error.toString(),
-  //     });
-  //   }
-  // }
+      const userTojson = user.transactions?.map((item) => item.toJson());
+      return HttpResponse.success200(res, "Transaction was successfully", userTojson);
+    } catch (error: any) {
+      return HttpResponse.genericError500(res, error);
+    }
+  }
 
   public async delete(req: Request, res: Response) {
     try {

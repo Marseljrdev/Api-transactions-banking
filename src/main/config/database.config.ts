@@ -3,8 +3,8 @@ import * as dotenv from "dotenv";
 
 dotenv.config();
 
-let entities = ["src/database/entities/**/*.ts"];
-let migrations = ["src/database/migrations/**/*.ts"];
+let entities = ["src/app/shared/database/entities/**/*.ts"];
+let migrations = ["src/app/shared/database/migrations/**/*.ts"];
 
 if(process.env.DB_ENV === 'production'){
   entities = ["build/database/entities/**/*.js"];

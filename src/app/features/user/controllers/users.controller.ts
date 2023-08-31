@@ -1,33 +1,26 @@
 import { Request, Response } from "express";
-import { User } from "../../../models/user.model";
 import { UserRepository } from "../repositories/user.repository";
+import { User } from "../../../models/user.model";
+import { HttpResponse } from "../../../shared/util/htttp-response.adapter";
+import { ListUserUseCase } from "../usecases/list-users.usecase";
+import { LoginUserUseCase } from "../usecases/login-user.usecase";
+import { UpdateUserUseCase } from "../usecases/update-users.usecase";
 
 export class UsersController {
   public async list(req: Request, res: Response) {
     try {
-      const repository = new UserRepository();
 
-      const result = await repository.list();
+      const usecases = new ListUserUseCase();
+      const result = await usecases.execute();
 
-      console.log('log result', result);
-      
-      if (result.length === 0) {
-        return res.status(404).send({
-          success: false,
-          message: "User not found",
-        });
+      if (!result) {
+        return HttpResponse.notFound(res, "User");
       }
 
-      return res.status(200).send({
-        success: true,
-        message: "Users were successfully",
-        data: result
-      });
+      // return HttpResponse.success200(res, "User list was successfully", result);
+      return res.status(result.code).send(result)
     } catch (error: any) {
-      return res.status(500).send({
-        success: false,
-        message: error.toString(),
-      });
+      return HttpResponse.genericError500(res, error);
     }
   }
 
@@ -38,9 +31,6 @@ export class UsersController {
       const repository = new UserRepository();
 
       const result = await repository.get(id);
-      // console.log('log result', result)
-
-      // let result = users.find((item) => item.id === id);
 
       if (!result) {
         return res.status(404).send({
@@ -62,171 +52,107 @@ export class UsersController {
     }
   }
 
-  // public create(req: Request, res: Response) {
-  //   try {
-  //     const { name, cpf, email, age, password } = req.body;
+  public async create(req: Request, res: Response) {
+    try {
+      const { name, cpf, email, age, password } = req.body;
 
-  //     if (!name) {
-  //       return res.status(400).send({
-  //         success: false,
-  //         message: "Name was not provided",
-  //       });
-  //     }
+      if (!name) {
+        return HttpResponse.fieldNotProvided(res, "name");
+      }
 
-  //     if (!cpf) {
-  //       return res.status(400).send({
-  //         success: false,
-  //         message: "Cpf was not provided",
-  //       });
-  //     }
+      if (!cpf) {
+        return HttpResponse.fieldNotProvided(res, "cpf");
+      }
 
-  //     if (!email) {
-  //       return res.status(400).send({
-  //         success: false,
-  //         message: "Email was not provided",
-  //       });
-  //     }
+      if (!email) {
+        return HttpResponse.fieldNotProvided(res, "email");
+      }
 
-  //     if (!age) {
-  //       return res.status(400).send({
-  //         success: false,
-  //         message: "Age was not provided",
-  //       });
-  //     }
+      if (!age) {
+        return HttpResponse.fieldNotProvided(res, "age");
+      }
 
-  //     if (!password) {
-  //       return res.status(400).send({
-  //         success: false,
-  //         message: "password was not provided",
-  //       });
-  //     }
+      if (!password) {
+        return HttpResponse.fieldNotProvided(res, "password");
+      }
 
-  //     const newUser = new User(name, cpf, email, age, password);
-  //     users.push(newUser);
+      const newUser = new User(name, cpf, email, age, password);
+      await new UserRepository().create(newUser);
 
-  //     return res.status(201).send({
-  //       success: true,
-  //       message: "User was created",
-  //       data: newUser,
-  //     });
-  //   } catch (error: any) {
-  //     return res.status(500).send({
-  //       success: false,
-  //       message: error.toString(),
-  //     });
-  //   }
-  // }
+      return HttpResponse.created(res, "User was created", newUser);
+    } catch (error: any) {
+      return HttpResponse.genericError500(res, error);
+    }
+  }
 
-  // public update(req: Request, res: Response) {
-  //   try {
-  //     const { id } = req.params;
-  //     const { name, cpf, email, age } = req.body;
+  public async update(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      const { name, cpf, email, age } = req.body;
 
-  //     let user = users.find((item) => item.id === id);
+      const usecases = new UpdateUserUseCase();
+      const result = await usecases.execute({
+        id,
+        name,
+        cpf,
+        email,
+        age
+      })
 
-  //     if (!user) {
-  //       return res.status(404).send({
-  //         success: false,
-  //         message: "User not found",
-  //       });
-  //     }
+      return res.status(result.code).send(result);
+    } catch (error: any) {
+      return HttpResponse.genericError500(res, error);
+    }
+  }
 
-  //     user.setName = name || user.name;
-  //     user.setCpf = cpf || user.cpf;
-  //     user.setEmail = email || user.email;
-  //     user.setAge = age || user.age;
+  public async delete(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
 
-  //     return res.status(201).send({
-  //       success: true,
-  //       message: "User updated successfully",
-  //     });
-  //   } catch (error: any) {
-  //     return res.status(500).send({
-  //       success: false,
-  //       message: error.toString(),
-  //     });
-  //   }
-  // }
+      const repository = new UserRepository();
 
-  // public delete(req: Request, res: Response) {
-  //   try {
-  //     const { id } = req.params;
+      let index = await repository.get(id);
 
-  //     let index = users.findIndex((item) => item.id === id);
+      if (!index) {
+        return res.status(404).send({
+          success: false,
+          message: "User not found",
+        });
+      }
 
-  //     if (index === -1) {
-  //       return res.status(404).send({
-  //         success: false,
-  //         message: "User not found",
-  //       });
-  //     }
+      const result = await repository.delete(id);
 
-  //     users.splice(index, 1);
+      return res.status(200).send({
+        success: true,
+        message: "User deleted successfully",
+        data: result,
+      });
+    } catch (error: any) {
+      return res.status(500).send({
+        success: false,
+        message: error.toString(),
+      });
+    }
+  }
 
-  //     return res.status(200).send({
-  //       success: true,
-  //       message: "User deleted successfully",
-  //     });
-  //   } catch (error: any) {
-  //     return res.status(500).send({
-  //       success: false,
-  //       message: error.toString(),
-  //     });
-  //   }
-  // }
+  public async login(req: Request, res: Response) {
+    try {
+      const { email, password } = req.body;
 
-  // public login(req: Request, res: Response) {
-  //   try {
-  //     const { email, password } = req.body;
+      if (!email) {
+        return HttpResponse.notFound(res, "Email");
+      }
 
-  //     if (!email) {
-  //       return res.status(404).send({
-  //         success: false,
-  //         message: "E-mail was not providded",
-  //       });
-  //     }
+      if (!password) {
+        return HttpResponse.notFound(res, "Password");
+      }
 
-  //     if (!password) {
-  //       return res.status(404).send({
-  //         success: false,
-  //         message: "Password was not providded",
-  //       });
-  //     }
+      const result = await new LoginUserUseCase().execute(req.body)
 
-  //     const user = new UserRepository().getByEmail(email);
-  //     console.log('log user', user?.email);
-
-  //     if (!user) {
-  //       return res.status(404).send({
-  //         success: false,
-  //         message: "User was not found",
-  //       });
-  //     }
-
-  //     if (user.password !== password) {
-  //       return res.status(401).send({
-  //         success: false,
-  //         message: "Acesso nao autorizado",
-  //       });
-  //     }
-
-  //     return res.status(200).send({
-  //       name: user.name,
-  //       success: true,
-  //       message: "User is logged",
-  //       data: {
-  //         id: user.id,
-  //         name: user.name,
-  //         email: user.email,
-  //         password: user.password
-  //       }
-
-  //     })
-  //   } catch (error: any) {
-  //     return res.status(500).send({
-  //       success: false,
-  //       message: "Error interno no servidor, tente novamente mais tarde",
-  //     });
-  //   }
-  // }
+ 
+      return res.status(result.code).send(result)
+    } catch (error: any) {
+      return HttpResponse.genericError500(res, error);
+    }
+  }
 }

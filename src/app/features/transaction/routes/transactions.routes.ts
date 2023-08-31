@@ -15,11 +15,11 @@ export const TransactionsRoutes = () => {
   //   controller.list(req, res)
   // );
 
-  // app.get(
-  //   "/users/:id/transactions/:transactionId",
-  //   [UserMiddleWare.validateUserExists],
-  //   new TransactionsController().transaction
-  // );
+  app.get(
+    "/users/:id/transactions/:transactionId",
+    [UserMiddleWare.validateUserExists],
+    new TransactionsController().transaction
+  );
 
   app.post(
     "/users/:id/transactions",
