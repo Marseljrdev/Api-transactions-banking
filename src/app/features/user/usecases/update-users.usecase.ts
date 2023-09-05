@@ -1,4 +1,5 @@
 import { Result } from "../../../shared/contracts/result.contracts";
+import { Usecase } from "../../../shared/contracts/usecase.contracts";
 import { Response } from "../../../shared/util/response.adapter";
 import { UserRepository } from "../repositories/user.repository";
 
@@ -10,7 +11,7 @@ interface UpdateParams {
     age?: number;
 }
 
-export class UpdateUserUseCase {
+export class UpdateUserUseCase implements Usecase {
     public async execute(params: UpdateParams): Promise<Result> {
         const repository = new UserRepository();
 

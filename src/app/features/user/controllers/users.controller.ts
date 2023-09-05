@@ -5,11 +5,13 @@ import { HttpResponse } from "../../../shared/util/htttp-response.adapter";
 import { ListUserUseCase } from "../usecases/list-users.usecase";
 import { LoginUserUseCase } from "../usecases/login-user.usecase";
 import { UpdateUserUseCase } from "../usecases/update-users.usecase";
+import { DeleteUserUseCase } from "../usecases/delete-users.usecase";
+import { CreateUserUseCase } from "../usecases/create-users.usecase";
+import { ObterUserUseCase } from "../usecases/obter-users.usecase";
 
 export class UsersController {
   public async list(req: Request, res: Response) {
     try {
-
       const usecases = new ListUserUseCase();
       const result = await usecases.execute();
 
@@ -18,7 +20,7 @@ export class UsersController {
       }
 
       // return HttpResponse.success200(res, "User list was successfully", result);
-      return res.status(result.code).send(result)
+      return res.status(result.code).send(result);
     } catch (error: any) {
       return HttpResponse.genericError500(res, error);
     }
@@ -28,27 +30,16 @@ export class UsersController {
     try {
       const { id } = req.params;
 
-      const repository = new UserRepository();
+      const usecase = new ObterUserUseCase();
+      const result = await usecase.execute(id);
 
-      const result = await repository.get(id);
-
-      if (!result) {
-        return res.status(404).send({
-          success: false,
-          message: "User not found",
-        });
+      if(!result){
+        return HttpResponse.notFound(res, "User");
       }
 
-      return res.status(200).send({
-        success: true,
-        message: "Users was obted successfully",
-        data: result.toJson(),
-      });
+      return res.status(result.code).send(result);
     } catch (error: any) {
-      return res.status(500).send({
-        success: false,
-        message: error.toString(),
-      });
+      return HttpResponse.genericError500(res, error);
     }
   }
 
@@ -76,10 +67,16 @@ export class UsersController {
         return HttpResponse.fieldNotProvided(res, "password");
       }
 
-      const newUser = new User(name, cpf, email, age, password);
-      await new UserRepository().create(newUser);
+      const usecase = new CreateUserUseCase();
+      const result = await usecase.execute({
+        name,
+        cpf,
+        email,
+        age,
+        password,
+      });
 
-      return HttpResponse.created(res, "User was created", newUser);
+      return res.status(result.code).send(result);
     } catch (error: any) {
       return HttpResponse.genericError500(res, error);
     }
@@ -96,8 +93,8 @@ export class UsersController {
         name,
         cpf,
         email,
-        age
-      })
+        age,
+      });
 
       return res.status(result.code).send(result);
     } catch (error: any) {
@@ -109,29 +106,12 @@ export class UsersController {
     try {
       const { id } = req.params;
 
-      const repository = new UserRepository();
+      const usecases = new DeleteUserUseCase();
+      const result = await usecases.execute(id);
 
-      let index = await repository.get(id);
-
-      if (!index) {
-        return res.status(404).send({
-          success: false,
-          message: "User not found",
-        });
-      }
-
-      const result = await repository.delete(id);
-
-      return res.status(200).send({
-        success: true,
-        message: "User deleted successfully",
-        data: result,
-      });
+      return res.status(result.code).send(result);
     } catch (error: any) {
-      return res.status(500).send({
-        success: false,
-        message: error.toString(),
-      });
+      return HttpResponse.genericError500(res, error);
     }
   }
 
@@ -147,10 +127,9 @@ export class UsersController {
         return HttpResponse.notFound(res, "Password");
       }
 
-      const result = await new LoginUserUseCase().execute(req.body)
+      const result = await new LoginUserUseCase().execute(req.body);
 
- 
-      return res.status(result.code).send(result)
+      return res.status(result.code).send(result);
     } catch (error: any) {
       return HttpResponse.genericError500(res, error);
     }
