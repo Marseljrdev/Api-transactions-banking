@@ -1,78 +1,50 @@
 import { Request, Response } from "express";
-import { Transactions, TransactionsType } from "../../../models/transactions.model";
-import { UserRepository } from "../../user/repositories/user.repository";
-import { TransactionRepository } from "../repositories/transaction.repository";
+import {
+  Transactions,
+  TransactionsType,
+} from "../../../models/transactions.model";
 import { HttpResponse } from "../../../shared/util/htttp-response.adapter";
+import { LisTransactionUseCase } from "../usecases/list-transactions.usecase";
+import { CreateTransactionUseCase } from "../usecases/create-transactions.usecase";
+import { ListUserTransactionsUseCase } from "../usecases/listuser-transactions.usecase";
+import { DeleTransactionUseCase } from "../usecases/delete-transactions.usecase";
+import { UpdateTransactionParams, UpdateTransactionUseCase } from "../usecases/update.transactions.usecase";
 
 export class TransactionsController {
-  // public async list(req: Request, res: Response) {
-  //   try {
-  //     const { userId } = req.params;
-  //     const { type } = req.query;
+  public async list(req: Request, res: Response) {
+    try {
+      const { userId } = req.params;
+      const { type } = req.query;
 
-  //     let result = await new TransactionRepository().list({
-  //       userId: userId,
-  //       type: type as TransactionsType,
-  //     });
+      const usecase = new LisTransactionUseCase();
 
-  //     if (!result) {
-  //       return res.status(404).send({
-  //         success: false,
-  //         message: "User not found",
-  //       });
-  //     }
+      const result = await usecase.execute({
+        userId,
+        type: type as TransactionsType,
+      });
 
-  //     let income = this.sumTransactionsValues(
-  //       transactions,
-  //       TransactionsType.Income
-  //     );
-  //     let outcome = this.sumTransactionsValues(
-  //       transactions,
-  //       TransactionsType.Outcome
-  //     );
-
-  //     return res.status(200).send({
-  //       success: true,
-  //       message: "Transactions was successfully listed",
-  //       data: result.map((item) => item.toJson()),
-  //       balance: {
-  //         income,
-  //         outcome,
-  //         total: income - outcome,
-  //       },
-  //     });
-  //   } catch (error: any) {
-  //     return res.status(500).send({
-  //       success: false,
-  //       message: error.toString(),
-  //     });
-  //   }
-  // }
+      return res.status(result.code).send(result);
+    } catch (error: any) {
+      return HttpResponse.genericError500(res, error);
+    }
+  }
 
   public async create(req: Request, res: Response) {
     try {
       const { title, value, type } = req.body;
 
       const { id } = req.params;
-      // const userFind = users.find((item) => item.id === id);
 
-      const userFind = await new UserRepository().get(id);
+      const usecase = new CreateTransactionUseCase();
 
-      if (!userFind) {
-        return res.status(404).send({
-          success: false,
-          message: "User not found ",
-        });
-      }
+      const result = await usecase.execute({
+        title,
+        value,
+        type,
+        id,
+      });
 
-      const newTransactions = new Transactions(title, value, type, userFind);
-      await new TransactionRepository().create(newTransactions);
-
-      return HttpResponse.success200(
-        res,
-        "Transactions added successfully",
-        newTransactions.toJson()
-      );
+      return res.status(result.code).send(result);
     } catch (error: any) {
       return HttpResponse.genericError500(res, "error" + error);
     }
@@ -82,23 +54,13 @@ export class TransactionsController {
     try {
       const { id, transactionId } = req.params;
 
-      const repositoryUser = new UserRepository();
-      
-      const user = await repositoryUser.get(id)
+      const usecase = new ListUserTransactionsUseCase();
+      const result = await usecase.execute({
+        id,
+        transactionId,
+      });
 
-      if (!user) {
-        return HttpResponse.notFound(res, "User");
-      }
-
-      const repositoryTransaction = new TransactionRepository();
-      const transactionFind = await repositoryTransaction.get(transactionId);
-
-      if (!transactionFind) {
-        return HttpResponse.notFound(res, "Transaction");
-      }
-
-      const userTojson = user.transactions?.map((item) => item.toJson());
-      return HttpResponse.success200(res, "Transaction was successfully", userTojson);
+      return res.status(result.code).send(result);
     } catch (error: any) {
       return HttpResponse.genericError500(res, error);
     }
@@ -108,41 +70,15 @@ export class TransactionsController {
     try {
       const { userId, transactionId } = req.params;
 
-      const user = await new UserRepository().get(userId);
-
-      if (!user) {
-        return res.status(404).send({
-          success: false,
-          message: "Usuario não encontrado.",
-        });
-      }
-
-      const transactionRepository = new TransactionRepository();
-      const delectedTransactions = await transactionRepository.delete(
-        transactionId
-      );
-
-      if (delectedTransactions === 0) {
-        return res.status(404).send({
-          success: false,
-          message: "Transação inexistente",
-        });
-      }
-
-      const transactions = await transactionRepository.list({
+      const usecase = new DeleTransactionUseCase();
+      const result = await usecase.execute({
         userId,
+        transactionId,
       });
 
-      return res.status(200).send({
-        success: true,
-        message: "Transação deletada com sucesso",
-        data: transactions.map((t) => t.toJson()),
-      });
+      return res.status(result.code).send(result);
     } catch (error: any) {
-      return res.status(500).send({
-        success: false,
-        message: "Erro interno no servidor",
-      });
+      return HttpResponse.genericError500(res, error);
     }
   }
 
@@ -151,55 +87,19 @@ export class TransactionsController {
       const { userId, transactionId } = req.params;
       const { type, value } = req.body;
 
-      const user = await new UserRepository().get(userId);
-
-      if (!user) {
-        return res.status(404).send({
-          success: false,
-          message: "User was not found",
-        });
-      }
-
-      const transactionRepository = new TransactionRepository();
-      const transaction = await transactionRepository.get(transactionId);
-
-      if (!transaction) {
-        return res.status(404).send({
-          success: false,
-          message: "Transaction was not found",
-        });
-      }
-
-      if (type) {
-        transaction.setType = type as TransactionsType;
-      }
-
-      if (value) {
-        transaction.setValue = value;
-      }
-
-      await transactionRepository.update(transaction);
-
-      const transactions = await transactionRepository.list({
+      const updateParams: UpdateTransactionParams = {
         userId,
-      });
+        transactionId,
+        type,
+        value,
+    };
 
-      return HttpResponse.success200(
-        res,
-        "Transactions was successfully update",
-        transactions.map((item) => item.toJson())
-      );
+    const usecase = new UpdateTransactionUseCase();
+    const result = await usecase.execute(updateParams);
+
+      return res.status(result.code).send(result);
     } catch (error) {
       return HttpResponse.genericError500(res, "Erro interno");
     }
-  }
-
-  private sumTransactionsValues(
-    transactions: Transactions[],
-    type: TransactionsType
-  ): number {
-    return transactions
-      .filter((t) => t.type === type)
-      .reduce((soma, transaction) => soma + transaction.value, 0);
   }
 }

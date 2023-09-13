@@ -9,6 +9,7 @@ import { DeleteUserUseCase } from "../usecases/delete-users.usecase";
 import { CreateUserUseCase } from "../usecases/create-users.usecase";
 import { ObterUserUseCase } from "../usecases/obter-users.usecase";
 
+
 export class UsersController {
   public async list(req: Request, res: Response) {
     try {

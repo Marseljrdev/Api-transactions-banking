@@ -1,16 +1,16 @@
 import { DataSource } from "typeorm";
 import config from "../config/database.config";
 
-    
 // padrao singleton
 export class Database {
-    private static _connection: DataSource;
+  private static _connection: DataSource;
 
-    public static get connection() {
-        return this._connection;
-    }
+  public static get connection() {
+    return this._connection;
+  }
 
-    public static async connect() {
-        this._connection = await config.initialize();
-    }
+  public static async connect() {
+    this._connection = await config.initialize();
+    console.log("Database is connected!");
+  }
 }

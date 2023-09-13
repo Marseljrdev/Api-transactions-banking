@@ -1,34 +1,37 @@
-
 import { Server } from "./main/config/express.config";
 import { Database } from "./main/database/database.connection";
 import "reflect-metadata";
+import { CacheRedisDataBase } from "./main/database/redis.connection";
 
-
-
-
-
-Database.connect().then(() => {
-  console.log("Database is connected!");
-
+Promise.all([Database.connect(), CacheRedisDataBase.connect()]).then(() => {
   const app = Server.create();
   Server.listen(app);
-
 });
 
-//conexao sem ter criado uma classe
-// pool
-//   .connect()
-//   .then((conection) => {
-//     // console.log(conection);
-//     listUsers(conection);
-//     console.log("conexao com o bd realizada com sucesso!");
+// Database.connect().then(() => {
+//   CacheRedisDataBase.connect();
+// });
+
+// import { Redis } from "ioredis";
+
+// const redis = new Redis({
+
+// });
+
+// redis
+//   .get("userMargot")
+//   .then((result) => {
+//     if(result !== null){
+
+//       const margot = JSON.parse(result)
+//       margot.id += 1;
+
+//       return redis.set("userMargot", JSON.stringify(margot))
+//     }
+//   })
+//   .then((result) => {
+//     console.log(result);
 //   })
 //   .catch((error) => {
 //     console.log(error);
 //   });
-
-//inserindo query
-// async function listUsers(connection: PoolClient) {
-//   const result = await connection.query("select * from transactions.users");
-//   console.log(result);
-// }
